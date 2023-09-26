@@ -19,6 +19,8 @@ namespace Calculator
             DecimalPoint,
             PlusMinusSign,
             BackSpace,
+            ClearAll,
+            ClearEntry,
             Undefined
         }
         public struct BtnStruct
@@ -35,7 +37,7 @@ namespace Calculator
         }
         private BtnStruct[,] buttons =
         {
-            {new BtnStruct('%'), new BtnStruct('\u0152'), new BtnStruct('C'), new BtnStruct('\u232b', SymbolType.BackSpace) },
+            {new BtnStruct('%'), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232b', SymbolType.BackSpace) },
             {new BtnStruct('\u215f'), new BtnStruct('\u00b2'), new BtnStruct('\u221a'), new BtnStruct('\u00f7') },
             {new BtnStruct('7', SymbolType.Number, true), new BtnStruct('8', SymbolType.Number, true), new BtnStruct('9', SymbolType.Number, true), new BtnStruct('\u00d7', SymbolType.Operator) },
             {new BtnStruct('4', SymbolType.Number, true), new BtnStruct('5', SymbolType.Number, true), new BtnStruct('6', SymbolType.Number, true), new BtnStruct('-', SymbolType.Operator) },
@@ -114,10 +116,30 @@ namespace Calculator
                     if (lblResult.Text.Length == 0 || lblResult.Text == "-0")
                         lblResult.Text = "0";
                     break;
+                case SymbolType.ClearEntry:
+
+                    break;
+                case SymbolType.ClearAll:
+                    lblResult.Text = "0";
+                    break;
                 case SymbolType.Undefined:
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void lblResult_TextChanged(object sender, EventArgs e)
+        {
+            if (lblResult.Text.Length > 16) lblResult.Text = lblResult.Text.Substring(0, 16);
+            if (lblResult.Text.Length > 11)
+            {
+                int delta = lblResult.Text.Length - 11;
+                lblResult.Font = new Font("Segoe UI", 36 - delta * (float)2.8, FontStyle.Regular); 
+            }
+            else
+            {
+                lblResult.Font = new Font("Segoe UI", 36, FontStyle.Regular);
             }
         }
     }
