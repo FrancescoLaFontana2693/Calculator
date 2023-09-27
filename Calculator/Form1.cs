@@ -151,7 +151,7 @@ namespace Calculator
             if (lblResult.Text.Length > lblResultMaxDigit) lblResult.Text = lblResult.Text.Substring(0, lblResultMaxDigit);
 
             int textWidth = TextRenderer.MeasureText(lblResult.Text, lblResult.Font).Width;
-            float newSize = lblResult.Font.Size * (((float)lblResult.Size.Width - 20) / textWidth);
+            float newSize = lblResult.Font.Size * (((float)lblResult.Size.Width - lblResultWidthMargin) / textWidth);
             if (newSize > lblResultBaseFontSize) newSize = lblResultBaseFontSize; 
             lblResult.Font = new Font("Segoe UI", newSize, FontStyle.Regular); 
         }
