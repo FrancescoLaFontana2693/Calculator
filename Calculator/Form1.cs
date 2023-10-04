@@ -17,6 +17,7 @@ namespace Calculator
         {
             Number,
             Operator,
+            specialOperator,
             DecimalPoint,
             PlusMinusSign,
             BackSpace,
@@ -26,12 +27,12 @@ namespace Calculator
         }
         public struct BtnStruct
         {
-            public char content;
+            public char Content;
             public SymbolType Type;
             public bool isBold;
             public BtnStruct(char c, SymbolType t = SymbolType.Undefined, bool b = false) 
             {
-                this.content = c;
+                this.Content = c;
                 this.Type = t;
                 this.isBold = b; 
             }
@@ -39,7 +40,7 @@ namespace Calculator
         private BtnStruct[,] buttons =
         {
             {new BtnStruct('%'), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232b', SymbolType.BackSpace) },
-            {new BtnStruct('\u215f'), new BtnStruct('\u00b2'), new BtnStruct('\u221a'), new BtnStruct('\u00f7', SymbolType.Operator) },
+            {new BtnStruct('\u215f', SymbolType.specialOperator), new BtnStruct('\u00b2'), new BtnStruct('\u221a'), new BtnStruct('\u00f7', SymbolType.Operator) },
             {new BtnStruct('7', SymbolType.Number, true), new BtnStruct('8', SymbolType.Number, true), new BtnStruct('9', SymbolType.Number, true), new BtnStruct('\u00d7', SymbolType.Operator) },
             {new BtnStruct('4', SymbolType.Number, true), new BtnStruct('5', SymbolType.Number, true), new BtnStruct('6', SymbolType.Number, true), new BtnStruct('-', SymbolType.Operator) },
             {new BtnStruct('1', SymbolType.Number, true), new BtnStruct('2', SymbolType.Number, true), new BtnStruct('3', SymbolType.Number, true), new BtnStruct('+', SymbolType.Operator) },
@@ -79,7 +80,7 @@ namespace Calculator
                     FontStyle fs = buttons[i, j].isBold ? FontStyle.Bold : FontStyle.Regular;
                     myButton.Font = new Font("Segoe UI", 16, fs);
                     myButton.BackColor = buttons[i, j].isBold ? Color.White : Color.Transparent;
-                    myButton.Text = buttons[i, j].content.ToString();
+                    myButton.Text = buttons[i, j].Content.ToString();
                     myButton.Width = btnWidth;
                     myButton.Height = btnHeight;
                     myButton.Top = posY;
@@ -105,10 +106,13 @@ namespace Calculator
                     if (lblResult.Text == "0" || lastButtonClicked.Type == SymbolType.Operator) lblResult.Text = ""; 
                     lblResult.Text += clickedButton.Text;
                     break;
+                case SymbolType.specialOperator:
+                    ManageSpecialOperator(clickedButtonStruct);
+                    break;
                 case SymbolType.Operator:
-                    if (lastButtonClicked.Type == SymbolType.Operator && lastButtonClicked.content != '=')
+                    if (lastButtonClicked.Type == SymbolType.Operator && lastButtonClicked.Content != '=')
                     {
-                        lastOperator = clickedButtonStruct.content;
+                        lastOperator = clickedButtonStruct.Content;
                     }
                     else
                     {
@@ -136,14 +140,11 @@ namespace Calculator
                    
                     break;
                 case SymbolType.ClearEntry:
-
+                    if (lastButtonClicked.Content == '=') clearAll();
+                    else lblResult.Text = "0";
                     break;
                 case SymbolType.ClearAll:
-                    operand1 = 0;
-                    operand2 = 0;
-                    result = 0;
-                    lastOperator = ' ';
-                    lblResult.Text = "0";
+                    clearAll();
                     break;
                 case SymbolType.Undefined:
                     break;
@@ -154,16 +155,41 @@ namespace Calculator
             lastButtonClicked = clickedButtonStruct;
         }
 
-        private void ManageOperator(BtnStruct clickedButtonStruct)
+        private void clearAll()
+        {
+            operand1 = 0;
+            operand2 = 0;
+            result = 0;
+            lastOperator = ' ';
+            lblResult.Text = "0";
+        }
+
+        private void ManageSpecialOperator(BtnStruct clickedButtonStruct)
+        {
+            if (clickedButtonStruct.Type == SymbolType.specialOperator)
+            {
+                operand2 = decimal.Parse(lblResult.Text);
+                switch (clickedButtonStruct.Content)
+                {
+                    case '\u215F':  // 1/x
+                        result = 1 / operand2;
+                        break;
+                    default:
+                        break;
+                }
+                return;
+            }
+        }
+        private void ManageOperator(BtnStruct clickedButtonStruct) 
         {
             if (lastOperator == ' ')
             {
                 operand1 = decimal.Parse(lblResult.Text);
-                if (clickedButtonStruct.content != '=') lastOperator = clickedButtonStruct.content; 
+                if (clickedButtonStruct.Content != '=') lastOperator = clickedButtonStruct.Content; 
             }
             else
             {
-                if(clickedButtonStruct.content != '=') operand2 = decimal.Parse(lblResult.Text);
+                if(clickedButtonStruct.Content != '=') operand2 = decimal.Parse(lblResult.Text);
                 switch (lastOperator)
                 {
                     case '+':
@@ -172,20 +198,20 @@ namespace Calculator
                     case '-':
                         result = operand1 - operand2;
                         break;
-                    case '\u00F7':
-                        result = operand1 / operand2;
-                        break;
                     case '\u00d7':
                         result = operand1 * operand2;
                         break;
+                    case '\u00F7':
+                        result = operand1 / operand2;
+                        break; 
                     default:
                         break;
                 }
                 operand1 = result;
-                if (clickedButtonStruct.content != '=')
+                if (clickedButtonStruct.Content != '=')
                 {
-                    lastOperator = clickedButtonStruct.content;
-                    if (lastButtonClicked.content == '=')
+                    lastOperator = clickedButtonStruct.Content;
+                    if (lastButtonClicked.Content == '=')
                         operand2 = 0;
                 }
                 lblResult.Text = result.ToString();
