@@ -110,13 +110,13 @@ namespace Calculator
                     ManageSpecialOperator(clickedButtonStruct);
                     break;
                 case SymbolType.Operator:
-                    if (lastButtonClicked.Type == SymbolType.Operator && lastButtonClicked.Content != '=')
+                    if (lastButtonClicked.Type != SymbolType.Operator || clickedButtonStruct.Content == '=')
                     {
-                        lastOperator = clickedButtonStruct.Content;
+                        ManageOperator(clickedButtonStruct);
                     }
                     else
                     {
-                        ManageOperator(clickedButtonStruct);
+                        lastOperator = clickedButtonStruct.Content;
                     }
                     break;
                 case SymbolType.DecimalPoint:
@@ -128,20 +128,26 @@ namespace Calculator
                         if (lblResult.Text.IndexOf("-") == -1)
                             lblResult.Text = "-" + lblResult.Text;
                         else
-                            lblResult.Text = lblResult.Text.Substring(1); 
+                            lblResult.Text = lblResult.Text.Substring(1);
+                    if (lastButtonClicked.Type == SymbolType.Operator)
+                    {
+                        operand1 = -operand1;
+                    }
                     break;
                 case SymbolType.BackSpace:
                     if (lastButtonClicked.Type != SymbolType.Operator)
                     {
                         lblResult.Text = lblResult.Text.Substring(0, lblResult.Text.Length - 1);
-                        if (lblResult.Text.Length == 0 || lblResult.Text == "-0")
+                        if (lblResult.Text.Length == 0 || lblResult.Text == "-0" || lblResult.Text == "-")
                             lblResult.Text = "0";
                     }
                    
                     break;
                 case SymbolType.ClearEntry:
-                    if (lastButtonClicked.Content == '=') clearAll();
-                    else lblResult.Text = "0";
+                    if (lastButtonClicked.Content == '=') 
+                        clearAll();
+                    else 
+                        lblResult.Text = "0";
                     break;
                 case SymbolType.ClearAll:
                     clearAll();
@@ -151,7 +157,7 @@ namespace Calculator
                 default:
                     break;
             }
-            if(clickedButtonStruct.Type != SymbolType.BackSpace)
+            if(clickedButtonStruct.Type != SymbolType.BackSpace && clickedButtonStruct.Type != SymbolType.PlusMinusSign)
             lastButtonClicked = clickedButtonStruct;
         }
 
@@ -171,13 +177,22 @@ namespace Calculator
                 operand2 = decimal.Parse(lblResult.Text);
                 switch (clickedButtonStruct.Content)
                 {
+                    case '%':
+                        result = operand1 * operand2;
+                        break;
                     case '\u215F':  // 1/x
                         result = 1 / operand2;
                         break;
+                    case '\u00B2':  // x^2
+                        result = operand2 * operand2;
+                        break ;
+                    case '\u221A':
+                        result = (decimal)Math.Sqrt((double)operand2);
+                        break ;
                     default:
                         break;
                 }
-                return;
+                lblResult.Text = result.ToString();
             }
         }
         private void ManageOperator(BtnStruct clickedButtonStruct) 
@@ -189,7 +204,7 @@ namespace Calculator
             }
             else
             {
-                if(clickedButtonStruct.Content != '=') operand2 = decimal.Parse(lblResult.Text);
+                if (lastButtonClicked.Content != '=') operand2 = decimal.Parse(lblResult.Text);
                 switch (lastOperator)
                 {
                     case '+':
@@ -220,22 +235,19 @@ namespace Calculator
 
         private void lblResult_TextChanged(object sender, EventArgs e)
         {
-            if (lblResult.Text == "-")
+            if (lblResult.Text.Length > 0) 
             {
-                lblResult.Text = "0";
-                return; 
-            }
-            if (lblResult.Text.Length > 0)
-            {
-                decimal num = decimal.Parse(lblResult.Text); string stOut = "";
+                double num = double.Parse(lblResult.Text); string stOut = "";
                 NumberFormatInfo nfi = new CultureInfo("it-IT", false).NumberFormat;
                 int decimalSeparatorPosition = lblResult.Text.IndexOf(",");
-                nfi.NumberDecimalDigits = decimalSeparatorPosition == -1 ? 0 : lblResult.Text.Length - decimalSeparatorPosition - 1;
+                nfi.NumberDecimalDigits = decimalSeparatorPosition == -1 ? 0 
+                    : lblResult.Text.Length - decimalSeparatorPosition - 1;
                 stOut = num.ToString("N", nfi);
                 if (lblResult.Text.IndexOf(",") == lblResult.Text.Length - 1) stOut += ",";
                 lblResult.Text = stOut;
             }
-            if (lblResult.Text.Length > lblResultMaxDigit) lblResult.Text = lblResult.Text.Substring(0, lblResultMaxDigit);
+            if (lblResult.Text.Length > lblResultMaxDigit)
+                lblResult.Text = lblResult.Text.Substring(0, lblResultMaxDigit);
 
             int textWidth = TextRenderer.MeasureText(lblResult.Text, lblResult.Font).Width;
             float newSize = lblResult.Font.Size * (((float)lblResult.Size.Width - lblResultWidthMargin) / textWidth);
