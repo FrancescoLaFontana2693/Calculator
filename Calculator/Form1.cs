@@ -200,11 +200,13 @@ namespace Calculator
             if (lastOperator == ' ')
             {
                 operand1 = decimal.Parse(lblResult.Text);
-                if (clickedButtonStruct.Content != '=') lastOperator = clickedButtonStruct.Content; 
+                if (clickedButtonStruct.Content != '=') lastOperator = clickedButtonStruct.Content;
+                lblCronologia.Text = operand1.ToString() + " " + lastOperator.ToString() + " "; 
             }
             else
             {
                 if (lastButtonClicked.Content != '=') operand2 = decimal.Parse(lblResult.Text);
+                lblCronologia.Text += operand2.ToString() + " ="; 
                 switch (lastOperator)
                 {
                     case '+':

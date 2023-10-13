@@ -30,6 +30,8 @@
         {
             this.lblResult = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblCronologia = new System.Windows.Forms.Label();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblResult
@@ -46,11 +48,21 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.lblCronologia);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(320, 30);
             this.panel1.TabIndex = 1;
+            // 
+            // lblCronologia
+            // 
+            this.lblCronologia.Font = new System.Drawing.Font("Segoe UI Semilight", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCronologia.Location = new System.Drawing.Point(0, 0);
+            this.lblCronologia.Name = "lblCronologia";
+            this.lblCronologia.Size = new System.Drawing.Size(320, 30);
+            this.lblCronologia.TabIndex = 0;
+            this.lblCronologia.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // Form1
             // 
@@ -65,6 +77,7 @@
             this.ShowIcon = false;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -73,6 +86,7 @@
 
         private System.Windows.Forms.Label lblResult;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label lblCronologia;
     }
 }
 
