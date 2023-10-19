@@ -39,8 +39,8 @@ namespace Calculator
         }
         private BtnStruct[,] buttons =
         {
-            {new BtnStruct('%'), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232b', SymbolType.BackSpace) },
-            {new BtnStruct('\u215f', SymbolType.specialOperator), new BtnStruct('\u00b2'), new BtnStruct('\u221a'), new BtnStruct('\u00f7', SymbolType.Operator) },
+            {new BtnStruct('%', SymbolType.specialOperator), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232b', SymbolType.BackSpace) },
+            {new BtnStruct('\u215F', SymbolType.specialOperator), new BtnStruct('\u00B2', SymbolType.specialOperator), new BtnStruct('\u221A', SymbolType.specialOperator), new BtnStruct('\u00f7', SymbolType.Operator) },
             {new BtnStruct('7', SymbolType.Number, true), new BtnStruct('8', SymbolType.Number, true), new BtnStruct('9', SymbolType.Number, true), new BtnStruct('\u00d7', SymbolType.Operator) },
             {new BtnStruct('4', SymbolType.Number, true), new BtnStruct('5', SymbolType.Number, true), new BtnStruct('6', SymbolType.Number, true), new BtnStruct('-', SymbolType.Operator) },
             {new BtnStruct('1', SymbolType.Number, true), new BtnStruct('2', SymbolType.Number, true), new BtnStruct('3', SymbolType.Number, true), new BtnStruct('+', SymbolType.Operator) },
@@ -168,17 +168,16 @@ namespace Calculator
             result = 0;
             lastOperator = ' ';
             lblResult.Text = "0";
+            lblCronologia.Text = "";
         }
 
         private void ManageSpecialOperator(BtnStruct clickedButtonStruct)
         {
-            if (clickedButtonStruct.Type == SymbolType.specialOperator)
-            {
                 operand2 = decimal.Parse(lblResult.Text);
                 switch (clickedButtonStruct.Content)
                 {
                     case '%':
-                        result = operand1 * operand2;
+                        result = operand1 * operand2 / 100;
                         break;
                     case '\u215F':  // 1/x
                         result = 1 / operand2;
@@ -189,11 +188,8 @@ namespace Calculator
                     case '\u221A':
                         result = (decimal)Math.Sqrt((double)operand2);
                         break ;
-                    default:
-                        break;
                 }
                 lblResult.Text = result.ToString();
-            }
         }
         private void ManageOperator(BtnStruct clickedButtonStruct) 
         {
